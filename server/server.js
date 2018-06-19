@@ -19,32 +19,55 @@ res.sendFile('index.html');
 io.on('connection', (socket) => {
   console.log('new user connected');
 
-  socket.emit('newEmail', {
-    from: 'mike@example.com',
-    text:'hey, what\'s up?',
-    createdAt: 12354
+
+socket.emit('newMessage', {
+    from: 'Admin',
+    text: 'Welcome to the chat app',
+    createdAt: new Date().getTime()
   });
 
-  socket.emit('newMessage', {
-    from: 'sara',
-    text:'great day',
-    createdAt: 1235666
-  });
+socket.broadcast.emit('newMessage', {
+    from: 'Admin',
+    text: 'Welcome new user to join the chat room',
+    createdAt: new Date().getTime()
+  })
+  
 
-  socket.on('createEmail',(newEmail) => {
-    console.log('Email created',newEmail);
-  });
+  // socket.emit('newEmail', {
+  //   from: 'mike@example.com',
+  //   text:'hey, what\'s up?',
+  //   createdAt: 12354
+  // });
+  //
+  // socket.emit('newMessage', {
+  //   from: 'sara',
+  //   text:'great day',
+  //   createdAt: 1235666
+  // });
 
-  socket.on('createMessage',(newMessage) => {
-    console.log('Message created',newMessage);
+  // socket.on('createEmail',(newEmail) => {
+  //   console.log('Email created',newEmail);
+  // });
+
+  socket.on('createMessage',(message) => {
+    console.log('Message created',message);
+    io.emit('newMessage', {
+      from: message.from,
+      text: message.text,
+      createdAt: new Date().getTime()
+    });
+
+    // socket.broadcast.emit('newMessage', {
+    //   from: message.from,
+    //   text: message.text,
+    //   createdAt: new Date().getTime()
+    // });
   });
 
   socket.on('disconnect', () => {
     console.log('user disconnected');
   });
 });
-
-
 
 
 server.listen(port, () => {
