@@ -10,6 +10,8 @@ const app = express();
 const server = http.createServer(app);
 const io = socket(server);
 
+const {generateMessage} = require('./utils/message');
+
 app.use(express.static(publicPath));
 
 app.get('/', (req, res) => {
@@ -20,18 +22,9 @@ io.on('connection', (socket) => {
   console.log('new user connected');
 
 
-socket.emit('newMessage', {
-    from: 'Admin',
-    text: 'Welcome to the chat app',
-    createdAt: new Date().getTime()
-  });
+socket.emit('newMessage', generateMessage('Admin', 'Welcome to chat message'));
 
-socket.broadcast.emit('newMessage', {
-    from: 'Admin',
-    text: 'Welcome new user to join the chat room',
-    createdAt: new Date().getTime()
-  })
-  
+socket.broadcast.emit('newMessage', generateMessage('Admin', 'new user joined'));
 
   // socket.emit('newEmail', {
   //   from: 'mike@example.com',
@@ -51,11 +44,7 @@ socket.broadcast.emit('newMessage', {
 
   socket.on('createMessage',(message) => {
     console.log('Message created',message);
-    io.emit('newMessage', {
-      from: message.from,
-      text: message.text,
-      createdAt: new Date().getTime()
-    });
+    io.emit('newMessage', generateMessage(message.from,message.text));
 
     // socket.broadcast.emit('newMessage', {
     //   from: message.from,
