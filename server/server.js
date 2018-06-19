@@ -42,10 +42,10 @@ socket.broadcast.emit('newMessage', generateMessage('Admin', 'new user joined'))
   //   console.log('Email created',newEmail);
   // });
 
-  socket.on('createMessage',(message) => {
+  socket.on('createMessage',(message, callback) => {
     console.log('Message created',message);
     io.emit('newMessage', generateMessage(message.from,message.text));
-
+    callback('this is from server');
     // socket.broadcast.emit('newMessage', {
     //   from: message.from,
     //   text: message.text,
