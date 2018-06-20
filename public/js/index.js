@@ -1,4 +1,19 @@
 var socket = io();
+
+function scrollToBottom(){
+  var messages = jQuery('ul#messages');
+  var newMessage = messages.children('li:last-child');
+  var clientHeight = messages.prop('clientHeight');
+  var scrollTop = messages.prop('scrollTop');
+  var scrollHeight = messages.prop('scrollHeight');
+  var newMessageHeight = newMessage.innerHeight();
+  var lastMessageHeight = newMessage.prev().innerHeight();
+
+  if(clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight){
+    messages.scrollTop(scrollHeight);
+  }
+}
+
 socket.on('connect', function(){
   console.log('Connected to server');
 });
@@ -12,6 +27,7 @@ socket.on('newMessage', function(message){
     createdAt: timestamp
   });
   jQuery('ul#messages').append(html);
+  scrollToBottom();
 });
 
 socket.on('newLocationMessage', function(message){
@@ -23,6 +39,7 @@ socket.on('newLocationMessage', function(message){
     createdAt: timestamp
   });
   jQuery('ul#messages').append(html);
+  scrollToBottom();
 });
 
 socket.on('disconnect', function(){
@@ -51,7 +68,7 @@ locationBtn.on('click', function(){
     socket.emit('createLocationMessage', {
       latitude: position.coords.latitude,
       longitude: position.coords.longitude
-    });    
+    });
   }, function(){
     locationBtn.removeAttr('disabled','disabled').text('Share location');
     alert('Unable to get your location');
