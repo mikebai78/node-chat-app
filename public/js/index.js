@@ -5,21 +5,25 @@ socket.on('connect', function(){
 
 socket.on('newMessage', function(message){
   var timestamp = moment(message.createdAt).format('h:mm a');
-  var li = jQuery('<li></li>');
-  li.text(`${message.from}: ${message.text} (${timestamp})`);
-  jQuery('ul#messages').append(li);
+  var template = jQuery('#message-template').html();
+  var html = Mustache.render(template,{
+    text: message.text,
+    from: message.from,
+    createdAt: timestamp
+  });
+  jQuery('ul#messages').append(html);
 });
 
 socket.on('newLocationMessage', function(message){
   var timestamp = moment(message.createdAt).format('h:mm a');
-  var li = jQuery('<li></li>');
-  var a = jQuery('<a target="_blank">My Location</a>');
-  li.text(`${message.from}: `);
-  a.attr('href', message.url)
-  li.append(a);
-  li.append(' (' + timestamp + ')');
-  jQuery('ul#messages').append(li);
-})
+  var template = jQuery('#location-template').html();
+  var html = Mustache.render(template,{
+    url: message.url,
+    from: message.from,
+    createdAt: timestamp
+  });
+  jQuery('ul#messages').append(html);
+});
 
 socket.on('disconnect', function(){
   console.log('Disconnect from server');
@@ -47,8 +51,7 @@ locationBtn.on('click', function(){
     socket.emit('createLocationMessage', {
       latitude: position.coords.latitude,
       longitude: position.coords.longitude
-    })
-    console.log(position);
+    });    
   }, function(){
     locationBtn.removeAttr('disabled','disabled').text('Share location');
     alert('Unable to get your location');
