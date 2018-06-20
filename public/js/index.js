@@ -4,17 +4,20 @@ socket.on('connect', function(){
 });
 
 socket.on('newMessage', function(message){
+  var timestamp = moment(message.createdAt).format('h:mm a');
   var li = jQuery('<li></li>');
-  li.text(`${message.from}: ${message.text}`);
+  li.text(`${message.from}: ${message.text} (${timestamp})`);
   jQuery('ul#messages').append(li);
 });
 
 socket.on('newLocationMessage', function(message){
+  var timestamp = moment(message.createdAt).format('h:mm a');
   var li = jQuery('<li></li>');
   var a = jQuery('<a target="_blank">My Location</a>');
   li.text(`${message.from}: `);
   a.attr('href', message.url)
   li.append(a);
+  li.append(' (' + timestamp + ')');
   jQuery('ul#messages').append(li);
 })
 
@@ -29,8 +32,7 @@ jQuery('#msgform').on('submit',function(e){
     from: 'user',
     text: msgInput.val()
   }, function(){
-    msgInput.val('');
-
+    msgInput.val();
   })
 })
 
